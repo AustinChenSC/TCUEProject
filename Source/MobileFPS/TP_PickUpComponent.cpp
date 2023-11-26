@@ -18,6 +18,9 @@ void UTP_PickUpComponent::BeginPlay()
 
 void UTP_PickUpComponent::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	// Hud stuff
+	
+	
 	// Checking if it is a First Person Character overlapping
 	AMobileFPSCharacter* Character = Cast<AMobileFPSCharacter>(OtherActor);
 	if(Character != nullptr)

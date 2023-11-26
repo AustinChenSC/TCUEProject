@@ -39,6 +39,7 @@ class AMobileFPSCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	class UInputAction* MoveAction;
 
+
 	
 public:
 	AMobileFPSCharacter();
@@ -56,6 +57,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
 	bool bHasRifle;
 
+	/** 玩家携带弹药量 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Weapon)
+	int AmmoCount;
+
 	/** Setter to set the bool */
 	UFUNCTION(BlueprintCallable, Category = Weapon)
 	void SetHasRifle(bool bNewHasRifle);
@@ -63,6 +68,19 @@ public:
 	/** Getter for the bool */
 	UFUNCTION(BlueprintCallable, Category = Weapon)
 	bool GetHasRifle();
+
+	/** Setter to set AmmoCount */
+	UFUNCTION(BlueprintCallable, Category = Weapon)
+	void SetAmmoCount(int NewAmmoCount);
+
+	/** Getter for AmmoCount */
+	UFUNCTION(BlueprintCallable, Category = Weapon)
+	int GetAmmoCount();
+
+	/** 将子弹数量减一 */
+	UFUNCTION(BlueprintCallable, Category = Weapon)
+	void FireOneAmmo();
+
 
 protected:
 	/** Called for movement input */

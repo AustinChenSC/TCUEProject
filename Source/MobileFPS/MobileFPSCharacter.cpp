@@ -16,7 +16,10 @@ AMobileFPSCharacter::AMobileFPSCharacter()
 {
 	// Character doesnt have a rifle at start
 	bHasRifle = false;
-	
+
+	// ³õÊ¼Ð¯´øµ¯Ò©Îª0
+	AmmoCount = 0;
+
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
 		
@@ -107,4 +110,21 @@ void AMobileFPSCharacter::SetHasRifle(bool bNewHasRifle)
 bool AMobileFPSCharacter::GetHasRifle()
 {
 	return bHasRifle;
+}
+
+void AMobileFPSCharacter::SetAmmoCount(int NewAmmoCount)
+{
+	AmmoCount = NewAmmoCount;
+}
+
+int AMobileFPSCharacter::GetAmmoCount()
+{
+	return AmmoCount;
+}
+
+void AMobileFPSCharacter::FireOneAmmo()
+{
+	if (AmmoCount) {
+		AmmoCount--;
+	}
 }
