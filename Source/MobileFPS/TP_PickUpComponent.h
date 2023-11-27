@@ -22,6 +22,10 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Interaction")
 	FOnPickUp OnPickUp;
 
+	/** 设置重叠事件 */
+	UFUNCTION(BlueprintCallable)
+	void SetOnBeginOverlap();
+
 	UTP_PickUpComponent();
 protected:
 

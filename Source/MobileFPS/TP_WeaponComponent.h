@@ -49,6 +49,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Weapon")
 	void Fire();
 
+	/** ¶ªÆúÎäÆ÷ */
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void DropWeapon();
+
+	/** ³¢ÊÔ»ñÈ¡Íæ¼Ò */
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	AMobileFPSCharacter* GetPlayer();
+
 protected:
 	/** Ends gameplay for this component. */
 	UFUNCTION()

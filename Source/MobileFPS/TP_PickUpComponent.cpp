@@ -2,6 +2,12 @@
 
 #include "TP_PickUpComponent.h"
 
+void UTP_PickUpComponent::SetOnBeginOverlap()
+{
+	// Register our Overlap Event
+	OnComponentBeginOverlap.AddDynamic(this, &UTP_PickUpComponent::OnSphereBeginOverlap);
+}
+
 UTP_PickUpComponent::UTP_PickUpComponent()
 {
 	// Setup the Sphere Collision
@@ -12,8 +18,7 @@ void UTP_PickUpComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Register our Overlap Event
-	OnComponentBeginOverlap.AddDynamic(this, &UTP_PickUpComponent::OnSphereBeginOverlap);
+	UTP_PickUpComponent::SetOnBeginOverlap();
 }
 
 void UTP_PickUpComponent::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

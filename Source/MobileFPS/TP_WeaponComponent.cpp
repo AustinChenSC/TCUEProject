@@ -80,7 +80,7 @@ void UTP_WeaponComponent::AttachWeapon(AMobileFPSCharacter* TargetCharacter)
 	{
 		return;
 	}
-
+	
 	// Attach the weapon to the First Person Character
 	FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
 	AttachToComponent(Character->GetMesh1P(), AttachmentRules, FName(TEXT("GripPoint")));
@@ -103,6 +103,42 @@ void UTP_WeaponComponent::AttachWeapon(AMobileFPSCharacter* TargetCharacter)
 			EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &UTP_WeaponComponent::Fire);
 		}
 	}
+}
+
+void UTP_WeaponComponent::DropWeapon()
+{
+	//必须在持有武器才能丢弃
+	if (Character == nullptr)
+	{
+		return;
+	}
+	//设置Chara持有武器状态
+	Character->SetHasRifle(false);
+
+	//取消Fire输入事件
+	if (APlayerController* PlayerController = Cast<APlayerController>(Character->GetController()))
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		{
+			Subsystem->RemoveMappingContext(FireMappingContext);
+		}
+	}
+
+	//将Weapon向前扔出去
+	
+
+	//将Weapon从父项移除
+	FDetachmentTransformRules DetachmentRules(EDetachmentRule::KeepRelative, true);
+	
+
+	
+
+
+}
+
+AMobileFPSCharacter* UTP_WeaponComponent::GetPlayer()
+{
+	return Character;
 }
 
 void UTP_WeaponComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
