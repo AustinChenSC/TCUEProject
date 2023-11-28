@@ -15,15 +15,23 @@ UTP_WeaponComponent::UTP_WeaponComponent()
 {
 	// Default offset from the character location for projectiles to spawn
 	MuzzleOffset = FVector(100.0f, 0.0f, 10.0f);
+
+	// 武器扔出默认速度
+	VelocityWhenDrop = FVector(300.0f, 0, 0);
 }
 
 
 void UTP_WeaponComponent::Fire()
 {
+
+	//debug
+	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue, TEXT("Try to fire"));
 	if (Character == nullptr || Character->GetController() == nullptr)
 	{
 		return;
 	}
+	//debug
+	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue, TEXT("Fired"));
 
 	// 检测玩家是否有子弹
 	if (Character->GetAmmoCount()) {
@@ -75,6 +83,7 @@ void UTP_WeaponComponent::Fire()
 
 void UTP_WeaponComponent::AttachWeapon(AMobileFPSCharacter* TargetCharacter)
 {
+	
 	Character = TargetCharacter;
 	if (Character == nullptr)
 	{
@@ -94,7 +103,9 @@ void UTP_WeaponComponent::AttachWeapon(AMobileFPSCharacter* TargetCharacter)
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
 			// Set the priority of the mapping to 1, so that it overrides the Jump action with the Fire action when using touch input
-			Subsystem->AddMappingContext(FireMappingContext, 1);
+			if (!Subsystem->HasMappingContext(FireMappingContext)) {
+				Subsystem->AddMappingContext(FireMappingContext, 1);
+			}
 		}
 
 		if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerController->InputComponent))
@@ -116,23 +127,38 @@ void UTP_WeaponComponent::DropWeapon()
 	Character->SetHasRifle(false);
 
 	//取消Fire输入事件
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(Character->GetController()->InputComponent))
+	{
+		// Fire
+		EnhancedInputComponent->ClearActionBindings(); //BindAction(FireAction, ETriggerEvent::Triggered, this, &UTP_WeaponComponent::Fire);
+		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue, TEXT("取消Fire输入事件"));
+	}
+
+	FVector throwVelocity;
+	//删除Fire输入映射
 	if (APlayerController* PlayerController = Cast<APlayerController>(Character->GetController()))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
+			GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue, TEXT("删除Fire输入映射"));
 			Subsystem->RemoveMappingContext(FireMappingContext);
 		}
+
+		//保存扔出去的方向与速度
+		//玩家速度
+		throwVelocity = PlayerController->GetPawn()->GetVelocity();
+		//相机朝向方向 默认速度
+		FVector facingDirection = PlayerController->PlayerCameraManager->GetCameraRotation().RotateVector(VelocityWhenDrop);
+		//叠加速度
+		throwVelocity += facingDirection;
 	}
 
-	//将Weapon向前扔出去
-	
-
 	//将Weapon从父项移除
-	FDetachmentTransformRules DetachmentRules(EDetachmentRule::KeepRelative, true);
-	
+	FDetachmentTransformRules DetachmentRules(EDetachmentRule::KeepWorld, true);
+	Character = nullptr;
 
-	
-
+	//将Weapon向前扔出去
+	this->SetPhysicsLinearVelocity(throwVelocity);
 
 }
 
