@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "AI_PatrolPoint.h"
 #include "MobileFPSGameMode.generated.h"
+
 
 UCLASS(minimalapi)
 class AMobileFPSGameMode : public AGameModeBase
