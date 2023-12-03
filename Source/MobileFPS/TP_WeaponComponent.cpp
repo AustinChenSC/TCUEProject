@@ -25,13 +25,13 @@ void UTP_WeaponComponent::Fire()
 {
 
 	//debug
-	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue, TEXT("Try to fire"));
+	//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue, TEXT("Try to fire"));
 	if (Character == nullptr || Character->GetController() == nullptr)
 	{
 		return;
 	}
 	//debug
-	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue, TEXT("Fired"));
+	//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue, TEXT("Fired"));
 
 	// 检测玩家是否有子弹
 	if (Character->GetAmmoCount()) {
