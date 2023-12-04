@@ -15,6 +15,7 @@ class MOBILEFPS_API AAI_PatrolPoint : public AActor
 
 
 
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
