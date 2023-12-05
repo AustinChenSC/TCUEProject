@@ -16,18 +16,24 @@ class AMobileFPSGameMode : public AGameModeBase
 public:
 	AMobileFPSGameMode();
 
-protected:
 	/** Sort Array */
 	UFUNCTION(BlueprintCallable)
 	TArray<int32> SortIntArray(TArray<int32> newArray);
 
 	/** Get an amount of int data */
 	UFUNCTION(BlueprintCallable)
-	void GetSomeDataFromOldArray(int32 number, TArray<int32>& newArray, TArray<int32> oldArray);
+	TArray<int32> GetSomeDataFromOldArray(int32 number, TArray<int32> oldArray);
+
+	/** Transform seconds to minutes and seconds (returns TArray)*/
+	UFUNCTION(BlueprintCallable)
+	TArray<int32> TransformSecondsToMinsAndSecs(int32 seconds);
+
+protected:
 
 	/** Set Strings by Ints of Mapping data */
 	UFUNCTION(BlueprintCallable)
-	void SetRankingValuesByKeys(TMap<int32, FString> rankingListMap, TArray<int32> keyArray, TArray<FString>& valueArray);
+	TArray<FString> SetRankingValuesByKeys(TMap<int32, FString> rankingListMap, TArray<int32> keyArray);
+
 };
 
 

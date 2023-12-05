@@ -2,6 +2,7 @@
 
 #include "MobileFPSGameMode.h"
 #include "MobileFPSCharacter.h"
+#include <algorithm>
 #include "UObject/ConstructorHelpers.h"
 
 AMobileFPSGameMode::AMobileFPSGameMode()
@@ -17,12 +18,17 @@ AMobileFPSGameMode::AMobileFPSGameMode()
 
 TArray<int32> AMobileFPSGameMode::SortIntArray(TArray<int32> newArray)
 {
-	newArray.Sort();
-	return TArray<int32>(newArray);
+	if (newArray.IsEmpty()) {
+		//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue, TEXT("-----------newArray Is Empty!----------"));
+	}
+	
+	newArray.Sort([](int32 A, int32 B)->bool {return A > B; });
+	return newArray;
 }
 
-void AMobileFPSGameMode::GetSomeDataFromOldArray(int32 number, TArray<int32>& newArray, TArray<int32> oldArray)
+TArray<int32> AMobileFPSGameMode::GetSomeDataFromOldArray(int32 number,  TArray<int32> oldArray)
 {
+	TArray<int32> newArray;
 	if (oldArray.Num() < number) {
 		newArray = oldArray;
 	}
@@ -31,11 +37,23 @@ void AMobileFPSGameMode::GetSomeDataFromOldArray(int32 number, TArray<int32>& ne
 			newArray.Push(oldArray[index]);
 		}
 	}
+	return newArray;
 }
 
-void AMobileFPSGameMode::SetRankingValuesByKeys(TMap<int32, FString> rankingListMap, TArray<int32> keyArray, TArray<FString>& valueArray)
+TArray<int32> AMobileFPSGameMode::TransformSecondsToMinsAndSecs(int32 seconds)
 {
+	TArray<int32> timeArray{ seconds / 60, seconds % 60 };
+	return timeArray;
+}
+
+TArray<FString> AMobileFPSGameMode::SetRankingValuesByKeys(TMap<int32, FString> rankingListMap, TArray<int32> keyArray)
+{
+	TArray<FString> valueArray;
+	if (rankingListMap.IsEmpty()) {
+		//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue, TEXT("-----------rankingListMap Is Empty!----------"));
+	}
 	for (int32 index = 0; index < keyArray.Num();index++) {
 		valueArray.Push(*rankingListMap.Find(keyArray[index]));
 	}
+	return valueArray;
 }
