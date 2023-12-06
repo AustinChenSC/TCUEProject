@@ -1,5 +1,5 @@
 # 公开课FPS项目    
-Demo演示视频 腾讯微云连接： https://share.weiyun.com/fr5joLCB  
+Demo演示视频 腾讯微云连接： 
 ## 修改事项
 2023.12.5：  
 增加场景倒计时；  
