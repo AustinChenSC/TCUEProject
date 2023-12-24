@@ -34,8 +34,11 @@ void UTP_WeaponComponent::Fire()
 	//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue, TEXT("Fired"));
 
 	// 检测玩家是否有子弹
-	if (Character->GetAmmoCount()) {
+	if (Character->GetAmmoCount() > 0) {
+		Character->FireOneAmmo();
 		// Try and fire a projectile 
+		OnFireOneBullet.Broadcast();
+
 		if (ProjectileClass != nullptr)
 		{
 			UWorld* const World = GetWorld();
@@ -54,8 +57,6 @@ void UTP_WeaponComponent::Fire()
 				World->SpawnActor<AMobileFPSProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
 			}
 
-			//将子弹数量减一
-			Character->FireOneAmmo();
 		}
 
 		// Try and play the sound if specified
@@ -76,9 +77,6 @@ void UTP_WeaponComponent::Fire()
 		}
 
 	}
-	
-	
-	
 }
 
 void UTP_WeaponComponent::AttachWeapon(AMobileFPSCharacter* TargetCharacter)
@@ -90,30 +88,29 @@ void UTP_WeaponComponent::AttachWeapon(AMobileFPSCharacter* TargetCharacter)
 		return;
 	}
 	
+	Character->AttachWeapon(this);
+
 	// Attach the weapon to the First Person Character
 	FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
 	AttachToComponent(Character->GetMesh1P(), AttachmentRules, FName(TEXT("GripPoint")));
-	
-	// switch bHasRifle so the animation blueprint can switch to another animation set
-	Character->SetHasRifle(true);
 
-	// Set up action bindings
-	if (APlayerController* PlayerController = Cast<APlayerController>(Character->GetController()))
-	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
-			// Set the priority of the mapping to 1, so that it overrides the Jump action with the Fire action when using touch input
-			if (!Subsystem->HasMappingContext(FireMappingContext)) {
-				Subsystem->AddMappingContext(FireMappingContext, 1);
-			}
-		}
+	//// Set up action bindings
+	//if (APlayerController* PlayerController = Cast<APlayerController>(Character->GetController()))
+	//{
+	//	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+	//	{
+	//		// Set the priority of the mapping to 1, so that it overrides the Jump action with the Fire action when using touch input
+	//		if (!Subsystem->HasMappingContext(FireMappingContext)) {
+	//			Subsystem->AddMappingContext(FireMappingContext, 1);
+	//		}
+	//	}
 
-		if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerController->InputComponent))
-		{
-			// Fire
-			EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &UTP_WeaponComponent::Fire);
-		}
-	}
+	//	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerController->InputComponent))
+	//	{
+	//		// Fire
+	//		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &UTP_WeaponComponent::Fire);
+	//	}
+	//}
 }
 
 void UTP_WeaponComponent::DropWeapon()
@@ -123,27 +120,20 @@ void UTP_WeaponComponent::DropWeapon()
 	{
 		return;
 	}
-	//设置Chara持有武器状态
-	Character->SetHasRifle(false);
 
-	//取消Fire输入事件
-	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(Character->GetController()->InputComponent))
-	{
-		// Fire
-		EnhancedInputComponent->ClearActionBindings(); //BindAction(FireAction, ETriggerEvent::Triggered, this, &UTP_WeaponComponent::Fire);
-		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue, TEXT("取消Fire输入事件"));
-	}
+	////取消Fire输入事件
+	//if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(Character->GetController()->InputComponent))
+	//{
+	//	// Fire
+	//	EnhancedInputComponent->ClearActionBindings(); //BindAction(FireAction, ETriggerEvent::Triggered, this, &UTP_WeaponComponent::Fire);
+	//	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue, TEXT("Delete FireInputAction"));
+	//}
+	OnDropThisWeapon.Broadcast();
 
 	FVector throwVelocity;
-	//删除Fire输入映射
+	
 	if (APlayerController* PlayerController = Cast<APlayerController>(Character->GetController()))
 	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue, TEXT("删除Fire输入映射"));
-			Subsystem->RemoveMappingContext(FireMappingContext);
-		}
-
 		//保存扔出去的方向与速度
 		//玩家速度
 		throwVelocity = PlayerController->GetPawn()->GetVelocity();
@@ -167,18 +157,18 @@ AMobileFPSCharacter* UTP_WeaponComponent::GetPlayer()
 	return Character;
 }
 
-void UTP_WeaponComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	if (Character == nullptr)
-	{
-		return;
-	}
-
-	if (APlayerController* PlayerController = Cast<APlayerController>(Character->GetController()))
-	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
-			Subsystem->RemoveMappingContext(FireMappingContext);
-		}
-	}
-}
+//void UTP_WeaponComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+//{
+//	if (Character == nullptr)
+//	{
+//		return;
+//	}
+//
+//	if (APlayerController* PlayerController = Cast<APlayerController>(Character->GetController()))
+//	{
+//		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+//		{
+//			Subsystem->RemoveMappingContext(FireMappingContext);
+//		}
+//	}
+//}

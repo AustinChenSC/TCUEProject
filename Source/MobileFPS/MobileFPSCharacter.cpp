@@ -72,6 +72,9 @@ void AMobileFPSCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 
 		//Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMobileFPSCharacter::Look);
+
+		//try to Fire
+		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &AMobileFPSCharacter::TryToFire);
 	}
 }
 
@@ -117,9 +120,17 @@ void AMobileFPSCharacter::SetAmmoCount(int NewAmmoCount)
 	AmmoCount = NewAmmoCount;
 }
 
-int AMobileFPSCharacter::GetAmmoCount()
+int32 AMobileFPSCharacter::GetAmmoCount()
 {
 	return AmmoCount;
+}
+
+void AMobileFPSCharacter::TryToFire()
+{
+	//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue, TEXT("Try to fire"));
+	if (bHasRifle) {
+		HoldingWeapon->Fire();
+	}
 }
 
 void AMobileFPSCharacter::FireOneAmmo()
@@ -127,4 +138,32 @@ void AMobileFPSCharacter::FireOneAmmo()
 	if (AmmoCount) {
 		AmmoCount--;
 	}
+}
+
+void AMobileFPSCharacter::AttachWeapon(UTP_WeaponComponent* pickingUpWeapon)
+{
+	if (pickingUpWeapon) {
+		HoldingWeapon = pickingUpWeapon;
+	}
+	else {
+		return;
+	}
+
+	// switch bHasRifle so the animation blueprint can switch to another animation set
+	AMobileFPSCharacter::SetHasRifle(true);
+}
+
+UTP_WeaponComponent* AMobileFPSCharacter::GetWeapon()
+{
+	return HoldingWeapon;
+}
+
+void AMobileFPSCharacter::DropWeapon()
+{
+	if (!bHasRifle) {
+		return;
+	}
+	AMobileFPSCharacter::SetHasRifle(false);
+	HoldingWeapon->DropWeapon();
+
 }

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "TP_WeaponComponent.h"
 #include "InputActionValue.h"
 #include "MobileFPSCharacter.generated.h"
 
@@ -38,7 +39,10 @@ class AMobileFPSCharacter : public ACharacter
 	/** Move Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	class UInputAction* MoveAction;
-	
+
+	/* 射击输入动作*/
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* FireAction;
 
 	
 public:
@@ -61,6 +65,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Weapon)
 	int AmmoCount;
 
+	/** 玩家手持武器 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
+	UTP_WeaponComponent* HoldingWeapon;
+
 	/** Setter to set the bool */
 	UFUNCTION(BlueprintCallable, Category = Weapon)
 	void SetHasRifle(bool bNewHasRifle);
@@ -71,16 +79,30 @@ public:
 
 	/** Setter to set AmmoCount */
 	UFUNCTION(BlueprintCallable, Category = Weapon)
-	void SetAmmoCount(int NewAmmoCount);
+	void SetAmmoCount(int newAmmoCount);
 
 	/** Getter for AmmoCount */
 	UFUNCTION(BlueprintCallable, Category = Weapon)
-	int GetAmmoCount();
+	int32 GetAmmoCount();
 
-	/** 将子弹数量减一 */
-	UFUNCTION(BlueprintCallable, Category = Weapon)
+	/** 尝试射击 */
+	UFUNCTION(BlueprintCallable)
+	void TryToFire();
+
+	UFUNCTION(BlueprintCallable)
 	void FireOneAmmo();
 
+	/** 附加武器 */
+	UFUNCTION(BlueprintCallable)
+	void AttachWeapon(UTP_WeaponComponent* pickingUpWeapon);
+
+	/** 获得武器 */
+	UFUNCTION(BlueprintCallable)
+	UTP_WeaponComponent* GetWeapon();
+
+	/** 去除武器 */
+	UFUNCTION(BlueprintCallable)
+	void DropWeapon();
 
 protected:
 	/** Called for movement input */
@@ -88,6 +110,7 @@ protected:
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
+	
 
 protected:
 	// APawn interface

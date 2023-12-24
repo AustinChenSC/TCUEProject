@@ -25,7 +25,7 @@ void UTP_PickUpComponent::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedCo
 {
 	// Hud stuff
 	
-	
+	//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue, TEXT("-----------Overlapping-------"));
 	// Checking if it is a First Person Character overlapping
 	AMobileFPSCharacter* Character = Cast<AMobileFPSCharacter>(OtherActor);
 	if(Character != nullptr)
